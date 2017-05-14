@@ -29,11 +29,12 @@ def main():
     inner_box = urwid.ListBox([urwid.Text('main box')])
     func_widgets = []
     for d in range(1, 11):
-        label = 'F{}'.format(d)
+        key = 'F{}'.format(d)
+        label = '{} - {}'.format(key, func_keys[key][0])
         w = urwid.AttrMap(
             urwid.Button(
                 label,
-                on_press=func_keys[label][0],
+                on_press=func_keys[key][0],
             ),
         'bg')
         w.rows((2,))
