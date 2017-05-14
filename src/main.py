@@ -34,7 +34,7 @@ def main():
         w = urwid.AttrMap(
             urwid.Button(
                 label,
-                on_press=func_keys[key][0],
+                on_press=func_keys[key][1],
             ),
         'bg')
         w.rows((2,))
@@ -53,6 +53,9 @@ def main():
     ])
 
     def unhandled_input(key):
+        if type(key) != str:
+            # could be a mouse event, e.g. ('mouse press', button, x, y)
+            return None
         if key.lower() in ('q', 'esc'):
             raise urwid.ExitMainLoop()
         if key.upper() in func_keys:
