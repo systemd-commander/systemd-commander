@@ -2,47 +2,40 @@
 # Services control
 #
 
-import subprocess
-
-SYSTEMCTL_BINPATH = '/bin/systemctl'
+import utils
 
 
-def start(name):
-    subprocess.check_call([SYSTEMCTL_BINPATH, 'start', name])
+class ServiceCommander():
 
-def stop(name):
-    subprocess.check_call([SYSTEMCTL_BINPATH, 'stop', name])
+    def __init__(self):
+        pass
 
-def restart(name):
-    subprocess.check_call([SYSTEMCTL_BINPATH, 'restart', name])
+    def start(self, name):
+        utils.runcmd('systemctl', ['start', name])
 
-def enable(name):
-    subprocess.check_call([SYSTEMCTL_BINPATH, 'enable', name])
+    def stop(self, name):
+        utils.runcmd('systemctl', ['stop', name])
 
-def disable(name):
-    subprocess.check_call([SYSTEMCTL_BINPATH, 'disable', name])
+    def restart(self, name):
+        utils.runcmd('systemctl', ['restart', name])
 
-def ls():
-    elements = []
-    out = subprocess.check_output([SYSTEMCTL_BINPATH, '-a', '--no-pager'])
-    out = out.splitlines()
-    assert len(out) > 5
-    out = out[1:-7]
-    for line in out:
-        if line.startswith(b' '):
-            name, loaded, active, sub, desc = line.split(None, 4)
-        else:
-            _, name, loaded, active, sub, desc = line.split(None, 5)
-        elements.append((name, loaded, active, sub, desc.strip()))
+    def enable(self, name):
+        utils.runcmd('systemctl', ['enable', name])
 
-    return elements
+    def disable(self, name):
+        utils.runcmd('systemctl', ['disable', name])
 
+    def get_list(self):
+        li = utils.runcmd('systemctl', ['--all', '--no-pager'])
+        return [i['UNIT'].replace(b'\x8f ', b'') for i in li]
 
 
 if __name__ == '__main__':
-    for name, loaded, active, sub, desc in ls():
-        print(name)
-    restart('dnsmasq.service')
+    c = ServiceCommander()
+    # c.restart('dnsmasq.service')
+    print([i['UNIT'] for i in c.get_list()])
+    print()
+    print([i['SUB'] for i in c.get_list()])
+    print()
+    print([i['ACTIVE'] for i in c.get_list()])
     print('done')
-
-

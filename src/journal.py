@@ -2,10 +2,13 @@
 # Journald interface
 #
 
+import subprocess
 from systemd import journal
 
+import utils
 
-class JournalCommander():
+
+class JournaldCommander():
     def __init__(self):
         self._cursors = {}  # unit -> position
         self._selected_unit_names = set()
@@ -16,3 +19,9 @@ class JournalCommander():
         for unit_name in self._selected_unit_names:
             j.add_match(_SYSTEMD_UNIT=unit_name)
         return j
+
+    def get_list(self):
+        """List unit files"""
+        li = utils.runcmd('systemctl', ['list-unit-files', '--all',
+                                          '--no-pager'])
+        return [i['UNIT FILE'] for i in li]
