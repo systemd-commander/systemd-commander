@@ -76,7 +76,7 @@ class SystemdCommander:
                 header += "[%s]" % name
             else:
                 header += " %s " % name
-        self.header.set_text(header)
+        self.header.original_widget.set_text(header)
 
         # pick commander, call list generator
         self.selected_items = set()
@@ -148,7 +148,10 @@ class SystemdCommander:
         screen = urwid.raw_display.Screen()
         self.show_box = urwid.ListBox([urwid.Text('show box')])
         self.selector_box_items = urwid.SimpleFocusListWalker([])
-        self.header = urwid.Text(('bold', u""), 'left', 'clip')
+        self.header = urwid.AttrMap(
+            urwid.Text(('bold', u""), 'left', 'clip'),
+            'bg',
+        )
         container = urwid.Pile([
             (1, urwid.Filler(self.header, 'top')),
             urwid.Columns([
