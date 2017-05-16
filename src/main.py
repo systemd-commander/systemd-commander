@@ -59,8 +59,10 @@ class SystemdCommander:
             machines.MachinedCommander(),
             machines.ImageCommander(),
         )
-        self._tab_names = ('Help', 'Services', 'Journal', 'Machines', 'Images')
-        self._selected_tab = 'Services'
+        self._tab_names = (
+            'F1 Help', 'F2 Services', 'F3 Journal',
+            'F4 Machines', 'F5 Images')
+        self._selected_tab = self._tab_names[1]
 
     def handle_tab_select(self, key):
         index = int(key[1:]) - 1
