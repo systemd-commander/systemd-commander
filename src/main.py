@@ -33,20 +33,6 @@ def do_exit(data):
     raise urwid.ExitMainLoop()
 
 
-func_keys = {
-    'F1': ('Blah', do_nothing),
-    'F2': ('Blah', do_nothing),
-    'F3': ('Blah', do_nothing),
-    'F4': ('Blah', do_nothing),
-    'F5': ('Blah', do_nothing),
-    'F6': ('Blah', do_nothing),
-    'F7': ('Blah', do_nothing),
-    'F8': ('Blah', do_nothing),
-    'F9': ('Blah', do_nothing),
-    'F10': ('Exit', do_exit),
-}
-
-
 class SystemdCommander:
 
     def __init__(self):
@@ -65,6 +51,9 @@ class SystemdCommander:
         self._selected_tab = self._tab_names[1]
 
     def handle_tab_select(self, key):
+        """Switch to the selected tab (if existing),
+        update the selector list content
+        """
         index = int(key[1:]) - 1
         try:
             self._selected_tab = self._tab_names[index]
@@ -137,7 +126,7 @@ class SystemdCommander:
             return None
         if key.lower() in ('q', 'esc'):
             raise urwid.ExitMainLoop()
-        if key.upper() in func_keys:
+        if key.upper()[0] == 'F' and len(key) > 1:
             self.handle_tab_select(key.upper())
             return
 
