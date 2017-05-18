@@ -10,6 +10,9 @@ from utils import parse_table
 class MachinedCommander():
     """Interface to Machined. Manage VMs and containers.<F2>
     """
+    name = 'Machines'
+    allow_multiple_selection = False
+
     def __init__(self):
         self._binpath = '/bin/machinectl'
 
@@ -30,12 +33,22 @@ class MachinedCommander():
             subprocess.check_call([self._binpath, 'pull-raw', '--verify=no',
                                    name])
 
+    def handle_key(self, main, keymap, key, selected):
+        if key not in keymap:
+            main.set_status("Unknown key '{}'".format(key))
+            return
+
 
 class ImageCommander():
+    name = 'Images'
+    allow_multiple_selection = False
 
     def get_list(self):
         li = utils.runcmd('machinectl', ['list-images'])
         return [i['NAME'] for i in li]
+
+    def handle_key(self, main, keymap, key, selected):
+        pass
 
 
 if __name__ == '__main__':

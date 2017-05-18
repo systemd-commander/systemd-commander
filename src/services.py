@@ -6,6 +6,8 @@ import utils
 
 
 class ServiceCommander():
+    name = 'Services'
+    allow_multiple_selection = False
 
     def __init__(self):
         pass
@@ -29,6 +31,12 @@ class ServiceCommander():
         li = utils.runcmd('systemctl', ['--all', '--no-pager'])
         return [i['UNIT'].replace(b'\x8f ', b'') for i in li]
 
+    def handle_key(self, main, keymap, key, selected):
+        cmd = keymap[key]
+        if cmd == 'restart':
+            for s in selected:
+                main.set_status("Restarting {}...".format(s))
+                self.restart(s)
 
 if __name__ == '__main__':
     c = ServiceCommander()

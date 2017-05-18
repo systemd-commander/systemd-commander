@@ -9,6 +9,9 @@ import utils
 
 
 class JournaldCommander():
+    name = 'Journal'
+    allow_multiple_selection = True
+
     def __init__(self):
         self._cursors = {}  # unit -> position
         self._selected_unit_names = set()
@@ -25,3 +28,6 @@ class JournaldCommander():
         li = utils.runcmd('systemctl', ['list-unit-files', '--all',
                                           '--no-pager'])
         return [i['UNIT FILE'] for i in li]
+
+    def handle_key(self, main, keymap, key, selected):
+        pass

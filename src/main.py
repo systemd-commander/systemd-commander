@@ -50,6 +50,12 @@ class SystemdCommander:
             'F4 Machines', 'F5 Images')
         self._selected_tab = self._tab_names[1]
 
+    @property
+    def current_commander(self):
+        # ugly
+        i = self._tab_names.index(self._selected_tab)
+        return self._commanders[i - 1]
+
     def handle_tab_select(self, key):
         """Switch to the selected tab (if existing),
         update the selector list content
@@ -69,11 +75,10 @@ class SystemdCommander:
 
         # pick commander, call list generator
         self.selected_items = set()
-        i = self._tab_names.index(self._selected_tab)
-        c = self._commanders[i - 1]
-        elements = c.get_list()
+        elements = self.current_commander.get_list()
         names = []
         for e in elements:
+            # TODO: cleanup
             if isinstance(e, list):
                 names.append(e[0])
             elif isinstance(e, str):
@@ -85,6 +90,8 @@ class SystemdCommander:
         self.update_selector_box(names)
 
     def handle_selector_box_enter(self, item):
+        if not self.current_commander.allow_multiple_selection:
+            return
         if not item.selectable():
             return
         if hasattr(item, 'unselected_label'):
@@ -95,7 +102,7 @@ class SystemdCommander:
         else:
             item.unselected_label = item.label
             self.selected_items.add(item.label)
-            item.set_label(b'* ' +item.label)
+            item.set_label(b'* ' + item.label)
 
     def update_selector_box(self, names):
         new_items = []
@@ -117,7 +124,7 @@ class SystemdCommander:
         cp.read(conf_fnames)
         for s in cp.sections():  # FIXME filter valid sections
             self.conf[s] = {}
-            for name, val in cp.items():
+            for name, val in cp[s].items():
                 self.conf[s][name] = val
 
     def handle_input(self, key):
@@ -129,6 +136,19 @@ class SystemdCommander:
         if key.upper()[0] == 'F' and len(key) > 1:
             self.handle_tab_select(key.upper())
             return
+        # pass key to the selected commander
+        keyconf = self.conf["%s:keys" % self.current_commander.name]
+        keymap = {v: k for k, v in keyconf.items()}
+        if key not in keymap:
+            self.set_status("Unknown key '{}'".format(key))
+            return
+
+        self.current_commander.handle_key(
+            self,
+            keymap,
+            key,
+            self.selected_items,
+        )
 
     def build_ui(self):
         palette = (
@@ -141,6 +161,7 @@ class SystemdCommander:
             urwid.Text(('bold', u""), 'left', 'clip'),
             'bg',
         )
+        self.footer = urwid.Text(('bold', u""), 'left', 'clip')
         container = urwid.Pile([
             (1, urwid.Filler(self.header, 'top')),
             urwid.Columns([
@@ -150,12 +171,16 @@ class SystemdCommander:
                     )
                 ),
                 urwid.LineBox(self.show_box),
-            ])
+            ]),
+            (1, urwid.Filler(self.footer, 'top')),
         ])
 
         self.handle_tab_select('F2')
         urwid.MainLoop(container, palette, screen=screen,
                        unhandled_input=self.handle_input).run()
+
+    def set_status(self, msg):
+        self.footer.set_text(" " + msg)
 
 
 def main():
