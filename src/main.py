@@ -112,7 +112,7 @@ class SystemdCommander:
                     name,
                     on_press=self.handle_selector_box_enter,
                 ),
-                'bg'
+                'palette'
             )
             w.rows((2,))
             new_items.append(w)
@@ -151,15 +151,17 @@ class SystemdCommander:
         )
 
     def build_ui(self):
-        palette = (
-            ('bg', 'white', 'black'),
-        )
+        palette = ((
+            'palette',
+            self.conf['global']['foreground_color'],
+            self.conf['global']['background_color']
+        ),)
         screen = urwid.raw_display.Screen()
         self.show_box = urwid.ListBox([urwid.Text('show box')])
         self.selector_box_items = urwid.SimpleFocusListWalker([])
         self.header = urwid.AttrMap(
             urwid.Text(('bold', u""), 'left', 'clip'),
-            'bg',
+            'palette',
         )
         self.footer = urwid.Text(('bold', u""), 'left', 'clip')
         container = urwid.Pile([
