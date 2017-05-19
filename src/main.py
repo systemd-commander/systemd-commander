@@ -45,6 +45,8 @@ class SystemdCommander:
             machines.MachinedCommander(),
             machines.ImageCommander(),
         )
+        for c in self._commanders:
+            c.main = self
         self._tab_names = (
             'F1 Help', 'F2 Services', 'F3 Journal',
             'F4 Machines', 'F5 Images')
@@ -90,9 +92,11 @@ class SystemdCommander:
         self.update_selector_box(names)
 
     def handle_selector_box_enter(self, item):
+        """Handle space or enter on a selector item
+        """
         if not self.current_commander.allow_multiple_selection:
             return
-        if not item.selectable():
+        if not item.selectable():  # TODO: needed?
             return
         if hasattr(item, 'unselected_label'):
             # ugly!
@@ -139,6 +143,9 @@ class SystemdCommander:
         # pass key to the selected commander
         keyconf = self.conf["%s:keys" % self.current_commander.name]
         keymap = {v: k for k, v in keyconf.items()}
+        keyconf = self.conf["global:keys"]
+        for k, v in keyconf.items():
+            keymap[v] = k
         if key not in keymap:
             self.set_status("Unknown key '{}'".format(key))
             return
