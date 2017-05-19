@@ -1,0 +1,37 @@
+=== systemd-commander
+
+Systemd Commander is a terminal-based tool to manage systemd:
+  - process control: list, start, stop, restart units
+  - journald: show journals, search by date and string
+  - machined: list, start, stop, VMs and containers; list, download, delete images.
+
+.Usage:
+[source, bash]
+----
+sudo systemd-commander
+----
+
+Configuration:
+
+Config files are parsed in the following order::
+  - /etc/systemd-commander.conf
+  - ~/.config/systemd-commander.conf
+  - ~/.systemd-commander.conf
+
+==== TODO
+
+Journald::
+  - [ ] prev/next boot
+  - [ ] prev/next unit
+  - [ ] prev/next page
+  - [ ] search string
+  - [ ] toggle follow
+  - [ ] seek by time
+
+systemctl::
+  - [ ] list units
+  - [ ] toggle enable/disable
+  - [ ] start/stop/restart/
+  - [ ] show status
+  - [ ] jump to logs for the highlighted unit
+
