@@ -33,10 +33,14 @@ class ServiceCommander():
 
     def handle_key(self, main, keymap, key, selected):
         cmd = keymap[key]
+        self.main.set_status(cmd)
         if cmd == 'restart':
             for s in selected:
                 main.set_status("Restarting {}...".format(s))
                 self.restart(s)
+        elif cmd == 'show':
+            self.main.set_status('show')
+
 
 if __name__ == '__main__':
     c = ServiceCommander()
